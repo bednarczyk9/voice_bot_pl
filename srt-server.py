@@ -32,7 +32,7 @@ class TransformersEngine(TranscriptionEngine):
             torch_dtype = torch.float32
 
         # --- GŁÓWNA ZMIANA: Używamy nowego, lepszego modelu po polsku ---
-        model_id = "openai/whisper-large-v3-turbo"
+        model_id = "Aspik101/distil-whisper-large-v3-pl"
 
         # Usunęliśmy argument `attn_implementation`, ponieważ nie jest zalecany w przykładzie dla tego modelu
         model = AutoModelForSpeechSeq2Seq.from_pretrained(
