@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # path to your llm
-LLM_MODEL="/home/bed9/voicechat2/llama.cpp/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf"
+LLM_MODEL="/home/bed9/voicechat2/llama.cpp/Meta-Llama-3-8B-Instruct-abliterated-v3-Q8_0.gguf"
 LLM_CONTEXT=8192 # if you use Llama 3.1 and don't specify this it'll OOM
 
 
