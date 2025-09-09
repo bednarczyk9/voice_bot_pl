@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # path to your llm
-LLM_MODEL=llama.cpp/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf 
+LLM_MODEL="/home/bed9/voicechat2/llama.cpp/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf"
 LLM_CONTEXT=8192 # if you use Llama 3.1 and don't specify this it'll OOM
 
 
@@ -29,7 +29,7 @@ create_window "voicechat2" "mamba activate voicechat2 && uvicorn voicechat2:app 
 create_window "voicechat2" "mamba activate voicechat2 && uvicorn srt-server:app --host 0.0.0.0 --port 8001 --reload"
 
 # LLM server (llama.cpp)
-create_window "llm" "llama.cpp/llama-server --host 127.0.0.1 --port 8002 -m $LLM_MODEL -ngl 99 -c $LLM_CONTEXT"
+create_window "llm" "llama.cpp/build/bin/llama-server --host 127.0.0.1 --port 8002 -m $LLM_MODEL -ngl 99 -c $LLM_CONTEXT"
 
 # TTS server (with Mamba activation)
 create_window "tts" "mamba activate voicechat2 && uvicorn tts-server:app --host 0.0.0.0 --port 8003"

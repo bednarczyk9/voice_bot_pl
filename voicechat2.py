@@ -32,7 +32,138 @@ app.mount("/ui", StaticFiles(directory="ui"), name="ui")
 
 SYSTEM = {
     "role": "system",
-    "content": "You are a helpful AI voice assistant. We are interacting via voice so keep responses concise, no more than to a sentence or two unless the user specifies a longer response. You are running on an AMD workstation GPU, but no need to mention that unless specifically asked."
+    "content": """1. Konfiguracja Bota i Cel Rozmowy
+Rola / Persona: Anna, profesjonalna asystentka ds. rozwoju biznesu. Mowisz tylko w języku polskim. Jeżeli czegoś nie rozumiesz prosisz o powturzenie np. "Coś przerywa, można prosić o powturzenie?"
+
+Reprezentuje: Powiatowe Kluby Biznesu Trzysta Czternaście.
+
+Ton: Profesjonalny, uprzejmy, kompetentny i efektywny.
+
+Cel Główny: Zaproszenie przedsiębiorcy na płatną kolację biznesową.
+
+Cel Drugorzędny (Fallback): Jeśli Cel Główny nie zostanie osiągnięty, zaproszenie na darmowe spotkanie online.
+
+Akcja Końcowa (w przypadku zainteresowania): Przekierowanie rozmowy do dyrektora lub wysłanie SMS z informacjami.
+
+2. Zmienne i Parametry Wydarzenia Głównego
+Nazwa wydarzenia: Kolacja biznesowa w Sandomierzu
+
+Data: 10 września
+
+Godzina: 18:00
+
+Miejsce: Restauracja Jadwiga, Sandomierz
+
+Region docelowy: Sandomierz, Tarnobrzeg, Opatów, Staszów
+
+Cena: 150 zł
+
+Kluczowe elementy: Prelekcja biznesowa, networking, budowanie relacji, kolacja dwudaniowa, poczęstunek, napoje.
+
+3. Scenariusz Rozmowy (Krok po Kroku)
+ETAP 1: Otwarcie i Weryfikacja
+Powitanie
+
+[DIALOG BOTA]: "Dzień dobry."
+
+[LOGIKA]: Oczekuj na odpowiedź rozmówcy (maksymalnie 2.5 sekundy).
+
+Weryfikacja (Człowiek vs. Poczta Głosowa)
+
+[WARUNEK]: Jeśli w ciągu 2.5s nie ma odpowiedzi.
+
+[AKCJA]: end_call()
+
+[WARUNEK]: Jeśli odpowiedź zawiera słowa kluczowe poczty głosowej (np. "poczta głosowa", "nagraj wiadomość", "po sygnale", "numer jest niedostępny").
+
+[AKCJA]: end_call()
+
+[WARUNEK]: Jeśli zostanie wykryta odpowiedź ludzka.
+
+[AKCJA]: Przejdź do Kroku 3.
+
+Przedstawienie się i Prośba o Czas
+
+[DIALOG BOTA]: "Nazywam się Anna, dzwonię z Powiatowych Klubów Biznesu Trzysta Czternaście. Czy mogę zająć dosłownie minutę, aby przedstawić zaproszenie na lokalne spotkanie dla przedsiębiorców, które odbędzie się w Sandomierzu 10 września?"
+
+[LOGIKA]: Analizuj odpowiedź rozmówcy.
+
+Odpowiedź twierdząca (np. "Tak", "Słucham", "Yhym", "OK"): Przejdź do ETAPU 2.
+
+Odpowiedź negatywna (np. "Nie mam czasu", "Nie, dziękuję"): Przejdź do ŚCIEŻKI ZAKOŃCZENIA B.
+
+ETAP 2: Prezentacja Oferty Głównej
+Opis Wydarzenia
+
+[DIALOG BOTA]: "Dziesiątego września o godzinie osiemnastej w Sandomierzu w Restauracji Jadwiga organizujemy spotkanie biznesowe połączone z promocją swojego biznesu, networkingiem dla przedsiębiorców z regionu Sandomierza, Tarnobrzega, Opatowa, Staszowa. Na kolacji biznesowej będzie: prelekcja biznesowa, budowanie relacji biznesowych, poznanie się z lokalnymi przedsiębiorcami. W cenie stu pięćdziesięciu złotych jest zapewniona kolacja dwudaniowa, poczęstunek, napoje i inne atrakcje."
+
+Pytanie Kwalifikujące
+
+[DIALOG BOTA]: "Czy byliby Państwo wstępnie zainteresowani udziałem w takim spotkaniu?"
+
+[LOGIKA]: Analizuj odpowiedź i przejdź do odpowiedniej ścieżki w ETAPIE 3.
+
+ETAP 3: Rozgałęzienie Scenariusza (Obsługa Odpowiedzi)
+ŚCIEŻKA A: Rozmówca jest zainteresowany
+[WARUNEK]: Odpowiedź twierdząca (np. "Tak", "Brzmi ciekawie", "Proszę powiedzieć więcej", "Yhym", "OK").
+
+Potwierdzenie i Propozycja Dalszych Kroków
+
+[DIALOG BOTA]: "Bardzo się cieszę! W takim razie, czy połączyć teraz z dyrektorem powiatowym w celu poznania więcej szczegółów, czy wystarczy że wyślemy SMS z informacją o tym spotkaniu?"
+
+[LOGIKA]: Czekaj na decyzję rozmówcy.
+
+Obsługa Decyzji
+
+[WARUNEK]: Zgoda na połączenie (np. "Proszę połączyć", "Tak, poproszę").
+
+[DIALOG BOTA]: "Znakomicie. W takim razie proszę o chwilę cierpliwości, już łączę z naszym dyrektorem."
+
+[AKCJA]: transfer_call()
+
+[WARUNEK]: Prośba o SMS (np. "Proszę wysłać SMS", "Wystarczy wiadomość").
+
+[DIALOG BOTA]: "Znakomicie, wkrótce dyrektor prześle wiadomość SMS z wszelkimi informacjami."
+
+[AKCJA]: end_call()
+
+[AKCJA]: Przejdź do ŚCIEŻKI ZAKOŃCZENIA A.
+
+ŚCIEŻKA B: Rozmówca nie jest zainteresowany (lub nie ma czasu na początku)
+[WARUNEK]: Odpowiedź negatywna (np. "Nie, dziękuję", "Nie jestem zainteresowany/a", "To nie dla mnie").
+
+Zrozumienie i Przedstawienie Oferty Drugorzędnej
+
+[DIALOG BOTA]: "Rozumiem, a czy byliby Państwo zainteresowani darmowym spotkaniem online dla przedsiębiorców w środę o godzinie dziesiątej rano?"
+
+[LOGIKA]: Analizuj odpowiedź.
+
+Obsługa Odpowiedzi na Ofertę Drugorzędną
+
+[WARUNEK]: Zainteresowanie spotkaniem online (np. "tak", "jestem zainteresowany", "jasne", "yhym").
+
+[DIALOG BOTA]: "Znakomicie, wkrótce dyrektor prześle wiadomość SMS z wszelkimi informacjami."
+
+[AKCJA]: end_call()
+
+[AKCJA]: Przejdź do ŚCIEŻKI ZAKOŃCZENIA A.
+
+[WARUNEK]: Brak zainteresowania spotkaniem online (np. "Nie", "Nie jestem zainteresowany").
+
+[AKCJA]: Przejdź do ŚCIEŻKI ZAKOŃCZENIA B.
+
+4. Bloki Końcowe Rozmowy
+ŚCIEŻKA ZAKOŃCZENIA A (Pozytywna / z wysłaniem SMS)
+
+[DIALOG BOTA]: "Dziękuję za poświęcony czas. Życzę miłego dnia!"
+
+[AKCJA]: end_call()
+
+ŚCIEŻKA ZAKOŃCZENIA B (Negatywna)
+
+[DIALOG BOTA]: "Dobrze, rozumiem. Dziękuję za poświęcony czas. Nie będę w takim razie przeszkadzać. Życzę miłego dnia!"
+
+[AKCJA]: end_call()"""
 }
 
 class ConversationManager:
@@ -168,71 +299,71 @@ async def websocket_endpoint(websocket: WebSocket):
     
     try:
         while True:
-            message = await websocket.receive()
-            # logger.debug(f"Received message: {message}")
-            
-            if 'bytes' in message:
-                audio_data = message['bytes']
-                logger.debug(f"Received audio data. Size: {len(audio_data)} bytes")
-                conversation_manager.sessions[session_id]["audio_buffer"] = audio_data
-            elif 'text' in message:
-                logger.debug(f"Received text message: {message['text']}")
-                try:
-                    data = json.loads(message['text'])
-                    logger.debug(f"Parsed JSON data: {data}")
-                    if data.get("type") == "ping":
-                        # Immediately send a pong response
-                        await websocket.send_json({
-                            "type": "pong"
-                        })
-                    elif data.get("action") == "stop_recording":
-                        logger.info("Stop recording message received. Processing audio...")
-                        conversation_manager.reset_latency_metrics(session_id)
-                        if conversation_manager.sessions[session_id]["is_processing"]:
-                            logger.warning("Interrupting ongoing processing")
-                            conversation_manager.sessions[session_id]["llm_output_sentences"].clear()
-                            conversation_manager.sessions[session_id]["is_processing"] = False
-                            await websocket.send_json({"type": "interrupted"})
-                        else:
-                            conversation_manager.sessions[session_id]["is_processing"] = True
-                            turn_id = conversation_manager.sessions[session_id]["current_turn"]
-                            try:
-                                audio_data = conversation_manager.sessions[session_id]["audio_buffer"]
-                                logger.info(f"Processing audio data. Size: {len(audio_data)} bytes")
-                                text = await transcribe_audio(audio_data, session_id, turn_id)
-                                if not text:
-                                    raise ValueError("Transcription resulted in empty text")
-                                logger.info(f"Transcription result: {text}")
-                                conversation_manager.add_user_message(session_id, text)
-                                
-                                # Send transcribed text to client
-                                await websocket.send_json({"type": "transcription", "content": text})
-                                
-                                await process_and_stream(websocket, session_id, text)
-
-                                latencies = conversation_manager.calculate_latencies(session_id)
-                                await websocket.send_json({"type": "latency_metrics", "metrics": latencies})
-                            except Exception as e:
-                                logger.error(f"Error during processing: {str(e)}")
-                                logger.error(traceback.format_exc())
-                                await websocket.send_json({"type": "error", "message": str(e)})
-                            finally:
+            try:
+                message = await websocket.receive()
+                
+                if 'bytes' in message:
+                    audio_data = message['bytes']
+                    # --- POCZĄTEK DODANEGO KODU DO LOGOWANIA ---
+                    logger.info(f"Otrzymano dane binarne o rozmiarze: {len(audio_data)} bajtów. Zapisywanie do pliku /tmp/debug_audio.opus")
+                    with open("/tmp/debug_audio.opus", "wb") as f:
+                        f.write(audio_data)
+                    # --- KONIEC DODANEGO KODU DO LOGOWANIA ---
+                    conversation_manager.sessions[session_id]["audio_buffer"] = audio_data
+                elif 'text' in message:
+                    logger.debug(f"Received text message: {message['text']}")
+                    try:
+                        data = json.loads(message['text'])
+                        logger.debug(f"Parsed JSON data: {data}")
+                        if data.get("type") == "ping":
+                            await websocket.send_json({"type": "pong"})
+                        elif data.get("action") == "stop_recording":
+                            logger.info("Stop recording message received. Processing audio...")
+                            conversation_manager.reset_latency_metrics(session_id)
+                            
+                            if conversation_manager.sessions[session_id]["is_processing"]:
+                                logger.warning("Interrupting ongoing processing")
                                 conversation_manager.sessions[session_id]["is_processing"] = False
-                                await websocket.send_json({"type": "processing_complete"})
-                    else:
-                        logger.warning(f"Received unexpected action: {data.get('action')}")
-                except json.JSONDecodeError:
-                    logger.error(f"Failed to parse JSON from text message: {message['text']}")
-            else:
-                logger.warning(f"Received message with unexpected format: {message}")
-    
-    except WebSocketDisconnect:
-        logger.info(f"WebSocket disconnected for session {session_id}")
-    except Exception as e:
-        logger.error(f"Unexpected error in WebSocket endpoint: {str(e)}")
-        logger.error(traceback.format_exc())
-        await websocket.close(code=1011, reason=str(e))
+                                await websocket.send_json({"type": "interrupted"})
+                            else:
+                                conversation_manager.sessions[session_id]["is_processing"] = True
+                                turn_id = conversation_manager.sessions[session_id]["current_turn"]
+                                try:
+                                    audio_data = conversation_manager.sessions[session_id]["audio_buffer"]
+                                    logger.info(f"Processing audio data. Size: {len(audio_data)} bytes")
+                                    text = await transcribe_audio(audio_data, session_id, turn_id)
+                                    if not text or len(text.strip()) == 0:
+                                        raise ValueError("Transcription resulted in empty text")
+                                    
+                                    logger.info(f"Transcription result: {text}")
+                                    conversation_manager.add_user_message(session_id, text)
+                                    await websocket.send_json({"type": "transcription", "content": text})
+                                    
+                                    await process_and_stream(websocket, session_id, text)
 
+                                    latencies = conversation_manager.calculate_latencies(session_id)
+                                    await websocket.send_json({"type": "latency_metrics", "metrics": latencies})
+                                except Exception as e:
+                                    logger.error(f"Error during processing: {str(e)}")
+                                    await websocket.send_json({"type": "error", "message": str(e)})
+                                finally:
+                                    conversation_manager.sessions[session_id]["is_processing"] = False
+                                    await websocket.send_json({"type": "processing_complete"})
+                    except json.JSONDecodeError:
+                        logger.error(f"Failed to parse JSON from text message: {message['text']}")
+            
+            except WebSocketDisconnect:
+                logger.info(f"Client disconnected gracefully. Session ID: {session_id}")
+                break # <-- Kluczowy element: wychodzimy z pętli while
+    
+    except Exception as e:
+        logger.error(f"An unexpected error occurred in the WebSocket session {session_id}: {str(e)}")
+        # Tutaj nie próbujemy już zamykać połączenia, bo prawdopodobnie jest już zamknięte
+    finally:
+        logger.info(f"Cleaning up and closing connection for session {session_id}")
+        # Usunięcie sesji z menedżera
+        if session_id in conversation_manager.sessions:
+            del conversation_manager.sessions[session_id]
 
 async def process_and_stream(websocket: WebSocket, session_id, text):
     try:
