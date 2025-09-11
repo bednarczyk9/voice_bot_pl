@@ -1,3 +1,7 @@
+key.pem
+cert.pem
+Anna_PL.pth
+ignore\
 # Servers
 whisper.cpp
 llama.cpp
